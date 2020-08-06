@@ -19,6 +19,7 @@ stores = [
 def home():
     return render_template('index.html')
 
+
 @app.route('/store')
 def get_stores():
     return jsonify({'stores': stores})
