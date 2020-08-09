@@ -4,7 +4,7 @@ from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 from user import UserRegister
 import create_tables
-from item import Item, ItemList
+from item import Item, GetSingleItem
 
 app = Flask(__name__)
 app.secret_key = 'test'
@@ -14,7 +14,7 @@ jwt = JWT(app, authenticate, identity)
 
 create_tables.maketable()
 api.add_resource(Item, '/item')
-api.add_resource(ItemList, '/items')
+api.add_resource(GetSingleItem, '/item/<string:itemname>')
 api.add_resource(UserRegister, '/register')
 
 
