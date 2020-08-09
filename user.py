@@ -25,8 +25,7 @@ class User:
         connection.close()
         return user
 
-    @classmethod
-    def find_by_id(cls, _id):
+    def find_by_id(self, _id):
         connection = sqlite3.connect('userdata.db')
         cursor = connection.cursor()
 
@@ -35,7 +34,7 @@ class User:
 
         row = result.fetchone()
         if row:
-            user = cls(*row)
+            user = row
         else:
             user = None
 
@@ -61,6 +60,8 @@ class UserRegister(Resource):
         cursor = connection.cursor()
         data = UserRegister.parser.parse_args()
 
+        if User.find_by_username(data['username']):
+            return {'Error': 'Username already taken'}, 400
         query = 'INSERT INTO users VALUES (NULL, ?, ?)'
         cursor.execute(query, (data['username'], data['password']))
         connection.commit()
