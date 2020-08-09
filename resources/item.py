@@ -5,10 +5,11 @@ from models.item import ItemModel
 
 
 class Item(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self):
         return ItemModel.find_all_items(self)
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('itemname',
@@ -43,6 +44,7 @@ class Item(Resource):
 
         return {'message': 'Item stored!'}, 200
 
+    @jwt_required()
     def delete(self):
         parse = reqparse.RequestParser()
         parse.add_argument('itemname',
@@ -67,6 +69,7 @@ class Item(Resource):
 
         return {'message': 'Item deleted'}, 200
 
+    @jwt_required()
     def put(self):
         parse = reqparse.RequestParser()
         parse.add_argument('itemname',
@@ -100,6 +103,7 @@ class Item(Resource):
 
 
 class GetSingleItem(Resource):
+    @jwt_required()
     def get(self, itemname):
         if ItemModel.get_single_item(self, itemname):
             return ItemModel.get_single_item(self, itemname)

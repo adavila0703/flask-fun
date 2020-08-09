@@ -24,7 +24,8 @@ class UserModel:
         connection.close()
         return user
 
-    def find_by_id(self, _id):
+    @classmethod
+    def find_by_id(cls, _id):
         connection = sqlite3.connect('userdata.db')
         cursor = connection.cursor()
 
