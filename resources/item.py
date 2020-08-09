@@ -1,68 +1,13 @@
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 import sqlite3
-from flask import jsonify
-
-
-class ItemStorage(Resource):
-    def __init__(self, itemname, stock, price):
-        self.itemname = itemname
-        self.stock = stock
-        self.price = price
-
-    def find_item(self, itemname):
-        connection = sqlite3.connect('userdata.db')
-        cursor = connection.cursor()
-
-        query = 'SELECT * FROM items WHERE itemname=?'
-        result = cursor.execute(query, (itemname,))
-
-        row = result.fetchone()
-
-        if row:
-            item = row
-        else:
-            item = None
-        connection.close()
-        return item
-
-    def find_all_items(self):
-        connection = sqlite3.connect('userdata.db')
-        cursor = connection.cursor()
-
-        query = 'SELECT * FROM items'
-        result = cursor.execute(query)
-
-        templist = []
-        tempdict = {}
-        for r in result:
-            tempdict = {'itemname': r[1], 'stock': r[2], 'price': r[3]}
-            templist.append(tempdict)
-
-        connection.close()
-        return templist, 200
-
-    def get_single_item(self, itemname):
-        connection = sqlite3.connect('userdata.db')
-        cursor = connection.cursor()
-
-        query = 'SELECT * FROM items WHERE itemname=?'
-
-        result = cursor.execute(query, (itemname,))
-        if result.fetchone() == None:
-            return None
-        else:
-            templist = []
-            for r in result:
-                print(r)
-
-            return templist, 200
+from models.item import ItemModel
 
 
 class Item(Resource):
     # @jwt_required()
     def get(self):
-        return ItemStorage.find_all_items(self)
+        return ItemModel.find_all_items(self)
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -84,7 +29,7 @@ class Item(Resource):
 
         data = parser.parse_args()
 
-        if ItemStorage.find_item(self, data['itemname']):
+        if ItemModel.find_item(self, data['itemname']):
             return {'message': 'This item already exists'}
 
         connection = sqlite3.connect('userdata.db')
@@ -107,7 +52,7 @@ class Item(Resource):
                            )
         data = parse.parse_args()
 
-        if ItemStorage.find_item(self, data['itemname']) == None:
+        if ItemModel.find_item(self, data['itemname']) == None:
             return {'message': 'Item doesnt exist'}
 
         connection = sqlite3.connect('userdata.db')
@@ -138,8 +83,8 @@ class Item(Resource):
                            help='Price field required!')
 
         data = parse.parse_args()
-
-        if ItemStorage.find_item(self, data['itemname']):
+        
+        if ItemModel.find_item(self, data['itemname']):
             connection = sqlite3.connect('userdata.db')
             cursor = connection.cursor()
 
@@ -156,6 +101,6 @@ class Item(Resource):
 
 class GetSingleItem(Resource):
     def get(self, itemname):
-        if ItemStorage.get_single_item(self, itemname):
-            return ItemStorage.get_single_item(self, itemname)
+        if ItemModel.get_single_item(self, itemname):
+            return ItemModel.get_single_item(self, itemname)
 
